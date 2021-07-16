@@ -2,9 +2,6 @@ version: '3'
 
 services:
     fluffy:
-      image: fluffy
-      build:
-        context: ./
-        dockerfile: Dockerfile
+      image: snicki13/fluffy
       environment:
         - FLUFFY_DISCORD_TOKEN
