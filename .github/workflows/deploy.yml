@@ -45,4 +45,4 @@ jobs:
     - name: copy docker-compose.yml
       run: rsync -avz dist/ fluffy@${{ secrets.DEPLOY_HOST }}:dist/
     - name: Re-deploy docker-compose
-      run: ssh fluffy@${{ secrets.DEPLOY_HOST }} docker-compose --project-directory dist/ pull && docker-compose --project-directory dist/ up -d --remove-orphans
+      run: ssh fluffy@${{ secrets.DEPLOY_HOST }} docker-compose --file dist/docker-compose.yml pull && docker-compose --file dist/docker-compose.yml up -d --remove-orphans
