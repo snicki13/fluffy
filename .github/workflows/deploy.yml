@@ -7,7 +7,7 @@ on:
 jobs:
   docker:
     name: Publish - Docker Hub
-    runs-on: ubuntu-18.04
+    runs-on: self-hosted
     env:
       REPO: ${{ secrets.DOCKER_REPO }}
     steps:
@@ -28,7 +28,7 @@ jobs:
 
   redeploy:
     name: Redeploy
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [docker]
     steps:
     - uses: actions/checkout@v1
