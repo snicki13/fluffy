@@ -38,6 +38,6 @@ jobs:
         known_hosts: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         if_key_exists: fail
     - name: copy docker-compose.yml
-      run: rsync -avz ./dist/ fluffy@${{ secrets.SSH_HOST }}:~/dist/
+      run: rsync -avz ./dist/ fluffy@${{ secrets.DEPLOY_HOST }}:~/dist/
     - name: Redeploy docker-compose
       run: ssh fluffy@${{ secrets.DEPLOY_HOST }}:cd ~/dist/ && docker-compose pull && docker-compose up -d --remove-orphans
