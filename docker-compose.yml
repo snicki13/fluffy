@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+    fluffy:
+      image: fluffy
+      build:
+        context: ./
+        dockerfile: Dockerfile
+      environment:
+        - DISCORD_FLUFFY_TOKEN
