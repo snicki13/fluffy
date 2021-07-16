@@ -42,6 +42,6 @@ jobs:
     - name: ls
       run: ls -la
     - name: copy docker-compose.yml
-      run: rsync -avz ./dist/ fluffy@${{ secrets.DEPLOY_HOST }}:~/dist/
+      run: rsync -avz dist/ fluffy@${{ secrets.DEPLOY_HOST }}:dist/
     - name: Re-deploy docker-compose
-      run: ssh fluffy@${{ secrets.DEPLOY_HOST }} cd ~/dist/ && docker-compose pull && docker-compose up -d --remove-orphans
+      run: ssh fluffy@${{ secrets.DEPLOY_HOST }} cd dist/ && docker-compose pull && docker-compose up -d --remove-orphans
