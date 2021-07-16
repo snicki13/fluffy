@@ -38,6 +38,6 @@ jobs:
         known_hosts: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         if_key_exists: fail
     - name: copy docker-compose.yml
-      run: scp ./docker-compose-yml fluffy@${{ secrets.DEPLOY_HOST }}:docker-compose.yml
+      run: scp ./docker-compose.yml fluffy@${{ secrets.DEPLOY_HOST }}:docker-compose.yml
     - name: Redeploy docker-compose
       run: ssh fluffy@${{ secrets.DEPLOY_HOST }}:docker-compose pull && docker-compose up -d --remove-orphans
