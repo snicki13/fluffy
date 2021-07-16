@@ -18,7 +18,6 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
         super.onMessageReceived(event)
         if (event.author.isBot) return
         val messageTimestamp = event.message.timeCreated.atZoneSameInstant(ZoneId.of("Europe/Berlin"))
-        val channel = event.channel
         when (messageTimestamp.hour) {
             in  0..4  -> nightMessageResponder.respondToMessage(event.channel, event.message)
             in  5..10 -> morningMessageResponder.respondToMessage(event.channel, event.message)
