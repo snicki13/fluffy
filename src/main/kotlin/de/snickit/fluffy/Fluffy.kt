@@ -14,7 +14,7 @@ object Fluffy: KoinComponent {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val publicKey = System.getenv("DISCORD_FLUFFY_TOKEN")
+        val publicKey = System.getenv("FLUFFY_DISCORD_TOKEN")
 
         initDependencyInjection()
 
