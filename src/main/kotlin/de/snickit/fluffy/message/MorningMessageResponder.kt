@@ -23,6 +23,8 @@ class MorningMessageResponder: KoinComponent, MessageResponder {
         if (userProps.contains(user)) {
             return
         }
-        channel.sendMessage("Guten Morgen ${message.author.name} von Fluffy :dog:! Du bist ja früh wach. Heute schon einen ${faker.coffee.variety()} getrunken? :coffee:").queue()
-        userProps.add(user)    }
+        channel.sendMessage("Guten Morgen ${message.author.name} von Fluffy :dog:! " +
+                "Du bist ja früh wach. Heute schon einen ${faker.coffee.variety()} getrunken? :coffee:").queue()
+        userProps.add(user)
+    }
 }
