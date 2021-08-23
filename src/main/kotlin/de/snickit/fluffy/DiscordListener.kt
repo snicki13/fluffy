@@ -32,9 +32,9 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
 
     private fun archiveChannel(event: MessageReceivedEvent, suffix: String) {
         val guild = event.guild
-        val channelMembers = guild.members
         val guildChannel = guild.getGuildChannelById(event.channel.id)
-        archiveChannelHandler.archiveChannel(guildChannel!!, channelMembers, suffix)
+        val channelMembers = guildChannel!!.members
+        archiveChannelHandler.archiveChannel(guildChannel, channelMembers, suffix)
     }
 
 
