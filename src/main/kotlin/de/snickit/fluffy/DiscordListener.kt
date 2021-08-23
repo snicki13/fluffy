@@ -1,9 +1,9 @@
 package de.snickit.fluffy
 
+import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.message.MorningMessageResponder
 import de.snickit.fluffy.message.NightMessageResponder
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.events.user.UserTypingEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -13,9 +13,15 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
 
     private val morningMessageResponder by inject<MorningMessageResponder>()
     private val nightMessageResponder by inject<NightMessageResponder>()
+    private val archiveChannelHandler by inject<ArchiveChannelHandler>()
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)
+        val messageContent = event.message.contentRaw
+        val matches = Regex("/archive\\s+([a-zA-Z0-9_-]+)").matchEntire(messageContent)
+        if (event.isFromGuild && matches != null) {
+            archiveChannel(event, matches.groupValues[1])
+        }
         if (event.author.isBot) return
         val messageTimestamp = event.message.timeCreated.atZoneSameInstant(ZoneId.of("Europe/Berlin"))
         when (messageTimestamp.hour) {
@@ -24,7 +30,11 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
         }
     }
 
-    override fun onUserTyping(event: UserTypingEvent) {
+    private fun archiveChannel(event: MessageReceivedEvent, suffix: String) {
+        val guild = event.guild
+        val channelMembers = guild.members
+        val guildChannel = guild.getGuildChannelById(event.channel.id)
+        archiveChannelHandler.archiveChannel(guildChannel!!, channelMembers, suffix)
     }
 
 

@@ -1,5 +1,6 @@
 package de.snickit.fluffy
 
+import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.message.MorningMessageResponder
 import de.snickit.fluffy.message.NightMessageResponder
 import io.github.serpro69.kfaker.Faker
@@ -32,6 +33,7 @@ object Fluffy: KoinComponent {
                     single { MorningMessageResponder() }
                     single { NightMessageResponder() }
                     single { DiscordListener() }
+                    single { ArchiveChannelHandler() }
                 }
             )
         }
