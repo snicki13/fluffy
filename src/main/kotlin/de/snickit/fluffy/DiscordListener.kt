@@ -3,6 +3,7 @@ package de.snickit.fluffy
 import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.message.MorningMessageResponder
 import de.snickit.fluffy.message.NightMessageResponder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.koin.core.component.KoinComponent
@@ -33,8 +34,14 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
     private fun archiveChannel(event: MessageReceivedEvent, suffix: String) {
         val guild = event.guild
         val guildChannel = guild.getGuildChannelById(event.channel.id)
-        val channelMembers = guildChannel!!.members
-        archiveChannelHandler.archiveChannel(guildChannel, channelMembers, suffix)
+        guild.loadMembers().onSuccess { guildMembers ->
+            val channelMembers = guildMembers
+                .filter { member ->
+                    member.hasPermission(guildChannel!!, Permission.VIEW_CHANNEL) &&
+                            !member.user.isBot
+                }
+            archiveChannelHandler.archiveChannel(guildChannel!!, channelMembers, suffix)
+        }
     }
 
 
