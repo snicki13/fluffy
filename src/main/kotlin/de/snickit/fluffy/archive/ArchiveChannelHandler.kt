@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 
 class ArchiveChannelHandler: KoinComponent {
 
-    val logger = LoggerFactory.getLogger(this::class.java)
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun archiveChannel(guildChannel: GuildChannel, channelMembers: MutableList<Member>, suffix: String) {
         logger.info("Archiviere ${guildChannel.id} mit suffix $suffix und membern:")

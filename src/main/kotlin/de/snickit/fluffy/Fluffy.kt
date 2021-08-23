@@ -10,11 +10,15 @@ import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.koin.dsl.module
+import org.slf4j.LoggerFactory
 
 object Fluffy: KoinComponent {
 
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
     @JvmStatic
     fun main(args: Array<String>) {
+        logger.info("Fluffy Version: 0.1")
         val publicKey = System.getenv("FLUFFY_DISCORD_TOKEN")
 
         initDependencyInjection()
