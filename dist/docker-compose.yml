@@ -2,6 +2,6 @@ version: '3'
 
 services:
     fluffy:
-      image: snicki13/fluffy
+      image: ghcr.io/snicki13/fluffy:master
       environment:
         - FLUFFY_DISCORD_TOKEN

@@ -1,11 +1,11 @@
 = Fluffy
 
-A simple Discord bot designed to remind users to go to bed and motivate at morning.
+A simple Discord bot designed to remind users to go to bed. Also, great at doing server admin chores like archiving old channels.
 
 Feel free to request features or create Pull Requests!
 
 Dependency injection is provided by https://insert-koin.io/[Koin].
 
-The latest Docker image is found on https://hub.docker.com/r/snicki13/fluffy[Docker Hub]
+The latest Docker image is found https://github.com/snicki13/fluffy/pkgs/container/fluffy[here]
 
 The application uses the environment variable $FLUFFY_DISCORD_TOKEN to obtain its Discord API key.
