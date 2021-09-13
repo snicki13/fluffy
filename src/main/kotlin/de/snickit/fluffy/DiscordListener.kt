@@ -16,14 +16,18 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
     private val nightMessageResponder by inject<NightMessageResponder>()
     private val archiveChannelHandler by inject<ArchiveChannelHandler>()
 
+    private fun isArchiveCommand(messageContent: String): Boolean =
+        Regex("/archive\\s*").matchEntire(messageContent) != null
+
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)
-        val messageContent = event.message.contentRaw
-        val matches = Regex("/archive\\s+([a-zA-Z0-9_-]+)").matchEntire(messageContent)
-        if (event.isFromGuild && matches != null) {
-            archiveChannel(event, matches.groupValues[1])
-        }
         if (event.author.isBot) return
+
+        val messageContent = event.message.contentRaw
+        if (event.isFromGuild && isArchiveCommand(messageContent)) {
+            // TODO: Channel must be in Module category, error otherwise
+            //archiveChannel(event) TODO uncomment when ready
+        }
         val messageTimestamp = event.message.timeCreated.atZoneSameInstant(ZoneId.of("Europe/Berlin"))
         when (messageTimestamp.hour) {
             in  0..4  -> nightMessageResponder.respondToMessage(event.channel, event.message)
@@ -31,7 +35,7 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
         }
     }
 
-    private fun archiveChannel(event: MessageReceivedEvent, suffix: String) {
+    private fun archiveChannel(event: MessageReceivedEvent) {
         val guild = event.guild
         val guildChannel = guild.getGuildChannelById(event.channel.id)
         guild.loadMembers().onSuccess { guildMembers ->
@@ -40,7 +44,7 @@ class DiscordListener: ListenerAdapter(), KoinComponent {
                     member.hasPermission(guildChannel!!, Permission.VIEW_CHANNEL) &&
                             !member.user.isBot
                 }
-            archiveChannelHandler.archiveChannel(guildChannel!!, channelMembers, suffix)
+            archiveChannelHandler.archiveChannel(guildChannel!!, channelMembers)
         }
     }
 
