@@ -13,16 +13,22 @@ class ArchiveChannelHandler: KoinComponent {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun archiveChannel(guildChannel: GuildChannel, channelMembers: List<Member>) {
-        val prefix: String = getCurrentSemester()
+        val prefix: String = getCurrentSemester() + "_"
 
         logger.info("Archiviere ${guildChannel.id} mit prefix $prefix und membern:")
         channelMembers.forEach {
             logger.info(it.effectiveName)
         }
-        assignCategory("archiv", guildChannel)
-        guildChannel.manager.sync()
+
+        // TODO: User needs permissions
+        // TODO: Delete role
+        logger.info("Ändere den namen des channels ${guildChannel.name}")
+        guildChannel.manager.setName(prefix + guildChannel.name).queue()
+        assignCategory("archiv", guildChannel, true)
         addMembersToChannel(guildChannel, channelMembers)
-        // TODO: Rename channel?
+
+
+        // TODO Post reaction, click to remove yourself from archive
 
     }
 
