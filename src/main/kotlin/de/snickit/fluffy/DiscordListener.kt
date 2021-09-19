@@ -1,6 +1,7 @@
 package de.snickit.fluffy
 
 import de.snickit.fluffy.archive.ArchiveChannelHandler
+import de.snickit.fluffy.createModule.CreateModuleHandler
 import de.snickit.fluffy.message.MorningMessageResponder
 import de.snickit.fluffy.message.NightMessageResponder
 import net.dv8tion.jda.api.Permission
@@ -15,6 +16,7 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
     private val morningMessageResponder by inject<MorningMessageResponder>()
     private val nightMessageResponder by inject<NightMessageResponder>()
     private val archiveChannelHandler by inject<ArchiveChannelHandler>()
+    private val createModuleHandler by inject<CreateModuleHandler>()
 
     private val commandTokenRegex = Regex("^(/\\S+)(?:\\s+(?:([^\"]\\S*)|\"(.*)\"))*\$")
 
@@ -24,13 +26,9 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         val commandTokens = commandTokenRegex.matchEntire(event.message.contentStripped)?.groupValues
 
         when (commandTokens?.get(1)) {
-            "/archive" -> {
-                archiveChannel(event)
-                event.message.delete().queue()
-            }
-
+            "/archive" -> archiveChannel(event)
             "/create" ->
-                createChannel(event, commandTokens)
+                createModule(event, commandTokens)
             else -> nonKeywordCommand(event)
         }
     }
@@ -43,8 +41,14 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         }
     }
 
-    private fun createChannel(event: MessageReceivedEvent, commandTokens: List<String>) {
+    private fun createModule(event: MessageReceivedEvent, commandTokens: List<String>) {
 
+        /*
+        Syntax:
+        /create module-name [Full Name] [Color] [emoji]
+         */
+
+        createModuleHandler.createModule(event, commandTokens)
     }
 
     private fun archiveChannel(event: MessageReceivedEvent) {
@@ -63,8 +67,10 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
                             !member.user.isBot &&
                             !member.hasPermission(Permission.ADMINISTRATOR)
                 }
-            archiveChannelHandler.archiveChannel(guildChannel, channelMembers)
+            archiveChannelHandler.archiveChannel(event, guildChannel, channelMembers)
         }
+
+        event.message.delete().queue()
     }
 
 
