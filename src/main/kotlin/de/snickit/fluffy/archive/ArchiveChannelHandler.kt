@@ -45,7 +45,7 @@ class ArchiveChannelHandler: KoinComponent {
                 }
             }
         }
-        guildChannel.manager.complete()
+        guildChannel.manager.queue()
 
 
         // TODO Post reaction, click to remove yourself from archive

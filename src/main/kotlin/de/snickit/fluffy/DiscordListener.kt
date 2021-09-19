@@ -18,17 +18,20 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
     private val archiveChannelHandler by inject<ArchiveChannelHandler>()
     private val createModuleHandler by inject<CreateModuleHandler>()
 
-    private val commandTokenRegex = Regex("^(/\\S+)(?:\\s+(?:([^\"]\\S*)|\"(.*)\"))*\$")
+    private val commandTokenRegex = Regex("^(/\\S+)(?:\\s+(?:([^\"]\\S+)|\"(.+)\"))*\$")
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)
         if (event.author.isBot || !event.isFromGuild) return
-        val commandTokens = commandTokenRegex.matchEntire(event.message.contentStripped)?.groupValues
+        val commandTokens = commandTokenRegex.matchEntire(event.message.contentStripped)
+        ?.groupValues
+            ?.drop(1) // drop full match
+            ?.filter { it != "" } // group values keeps non-matched groups as empty string or null
 
-        when (commandTokens?.get(1)) {
+        when (commandTokens?.first()) {
             "/archive" -> archiveChannel(event)
             "/create" ->
-                createModule(event, commandTokens)
+                createModule(event, commandTokens.drop(1)) // remove command token itself
             else -> nonKeywordCommand(event)
         }
     }
@@ -42,12 +45,6 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
     }
 
     private fun createModule(event: MessageReceivedEvent, commandTokens: List<String>) {
-
-        /*
-        Syntax:
-        /create module-name [Full Name] [Color] [emoji]
-         */
-
         createModuleHandler.createModule(event, commandTokens)
     }
 
