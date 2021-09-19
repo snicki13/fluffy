@@ -36,14 +36,17 @@ object Utils {
 
 
     fun assignCategory(categoryName: String, guildChannel: GuildChannel, sync: Boolean) {
-        val guild = guildChannel.guild
-        val cats = guild.getCategoriesByName(categoryName, true)
+        val cats = guildChannel.guild.getCategoriesByName(categoryName, true)
         if (cats.size != 1) {
             throw Exception("Category $categoryName does not exist or is ambivalent!")
         }
-        logger.info("assign category $categoryName")
-        guildChannel.manager.setParent(cats.first()).queue()
-        if(sync) guildChannel.manager.sync(cats.first()).queue()
+        val parentCat = cats.first()
+        logger.info("assign category ${parentCat.name}")
+        guildChannel.manager.setParent(parentCat)
+        if(sync) {
+            logger.info("syncing permissions with ${parentCat.name}")
+            guildChannel.manager.sync(parentCat)
+        }
     }
 
     fun addMembersToChannel(guildChannel: GuildChannel, channelMembers: List<Member>) {
@@ -53,7 +56,7 @@ object Utils {
                 member,
                 listOf(Permission.VIEW_CHANNEL, Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY),
                 listOf()
-            ).queue()
+            )
         }
     }
 }

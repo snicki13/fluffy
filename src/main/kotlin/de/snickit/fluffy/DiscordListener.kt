@@ -24,8 +24,11 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         val commandTokens = commandTokenRegex.matchEntire(event.message.contentStripped)?.groupValues
 
         when (commandTokens?.get(1)) {
-            "/archive" ->
+            "/archive" -> {
                 archiveChannel(event)
+                event.message.delete().queue()
+            }
+
             "/create" ->
                 createChannel(event, commandTokens)
             else -> nonKeywordCommand(event)
@@ -57,7 +60,8 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         guild.loadMembers().onSuccess { guildMembers ->
             val channelMembers = guildMembers.filter { member ->
                     member.hasPermission(guildChannel, Permission.VIEW_CHANNEL) &&
-                            !member.user.isBot
+                            !member.user.isBot &&
+                            !member.hasPermission(Permission.ADMINISTRATOR)
                 }
             archiveChannelHandler.archiveChannel(guildChannel, channelMembers)
         }

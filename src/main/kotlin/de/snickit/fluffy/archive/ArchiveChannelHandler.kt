@@ -23,9 +23,10 @@ class ArchiveChannelHandler: KoinComponent {
         // TODO: User needs permissions
         // TODO: Delete role
         logger.info("Ändere den namen des channels ${guildChannel.name}")
-        guildChannel.manager.setName(prefix + guildChannel.name).queue()
+        guildChannel.manager.setName(prefix + guildChannel.name)
         assignCategory("archiv", guildChannel, true)
         addMembersToChannel(guildChannel, channelMembers)
+        guildChannel.manager.complete()
 
 
         // TODO Post reaction, click to remove yourself from archive
