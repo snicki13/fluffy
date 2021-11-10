@@ -64,11 +64,12 @@ class CreateModuleHandler: KoinComponent {
             return
         }
         val roleAction = event.guild.createRole()
-        if(color != null) roleAction.setColor(color)
+        if(color != null)
+            roleAction.setColor(color)
         roleAction.setMentionable(true)
-        roleAction.setName(channelName)
-        roleAction.setHoisted(false)
-        roleAction.queue(callback)
+            .setName(channelName)
+            .setHoisted(false)
+            .queue(callback)
         logger.info("Created role")
 
 
