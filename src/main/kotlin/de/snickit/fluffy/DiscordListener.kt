@@ -1,6 +1,7 @@
 package de.snickit.fluffy
 
 import de.snickit.fluffy.archive.ArchiveChannelHandler
+import de.snickit.fluffy.createModule.CreateModuleHandler
 import de.snickit.fluffy.message.MorningMessageResponder
 import de.snickit.fluffy.message.NightMessageResponder
 import net.dv8tion.jda.api.Permission
@@ -10,40 +11,64 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.time.ZoneId
 
-class DiscordListener: ListenerAdapter(), KoinComponent {
+class DiscordListener : ListenerAdapter(), KoinComponent {
 
     private val morningMessageResponder by inject<MorningMessageResponder>()
     private val nightMessageResponder by inject<NightMessageResponder>()
     private val archiveChannelHandler by inject<ArchiveChannelHandler>()
+    private val createModuleHandler by inject<CreateModuleHandler>()
+
+    private val commandTokenRegex = Regex("^(/\\S+)(?:\\s+(?:([^\"]\\S+)|\"(.+)\"))*\$")
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
         super.onMessageReceived(event)
-        val messageContent = event.message.contentRaw
-        val matches = Regex("/archive\\s+([a-zA-Z0-9_-]+)").matchEntire(messageContent)
-        if (event.isFromGuild && matches != null) {
-            archiveChannel(event, matches.groupValues[1])
+        if (event.author.isBot || !event.isFromGuild) return
+        val commandTokens = commandTokenRegex.matchEntire(event.message.contentStripped)
+        ?.groupValues
+            ?.drop(1) // drop full match
+            ?.filter { it != "" } // group values keeps non-matched groups as empty string or null
+
+        when (commandTokens?.first()) {
+            "/archive" -> archiveChannel(event)
+            "/create" ->
+                createModule(event, commandTokens.drop(1)) // remove command token itself
+            else -> nonKeywordCommand(event)
         }
-        if (event.author.isBot) return
+    }
+
+    private fun nonKeywordCommand(event: MessageReceivedEvent){
         val messageTimestamp = event.message.timeCreated.atZoneSameInstant(ZoneId.of("Europe/Berlin"))
         when (messageTimestamp.hour) {
-            in  0..4  -> nightMessageResponder.respondToMessage(event.channel, event.message)
-            in  5..10 -> morningMessageResponder.respondToMessage(event.channel, event.message)
+            in 0..4 -> nightMessageResponder.respondToMessage(event.channel, event.message)
+            in 5..10 -> morningMessageResponder.respondToMessage(event.channel, event.message)
         }
     }
 
-    private fun archiveChannel(event: MessageReceivedEvent, suffix: String) {
+    private fun createModule(event: MessageReceivedEvent, commandTokens: List<String>) {
+        createModuleHandler.createModule(event, commandTokens)
+    }
+
+    private fun archiveChannel(event: MessageReceivedEvent) {
         val guild = event.guild
-        val guildChannel = guild.getGuildChannelById(event.channel.id)
-        guild.loadMembers().onSuccess { guildMembers ->
-            val channelMembers = guildMembers
-                .filter { member ->
-                    member.hasPermission(guildChannel!!, Permission.VIEW_CHANNEL) &&
-                            !member.user.isBot
-                }
-            archiveChannelHandler.archiveChannel(guildChannel!!, channelMembers, suffix)
-        }
-    }
+        val guildChannel = guild.getGuildChannelById(event.channel.id)!!
 
+        if (!guild.getCategoriesByName("MODULE", true).contains(guildChannel.parent)) {
+            event.channel.sendMessage("YOU SHALL NOT PASS (or archive) this Channel!").queue()
+            return
+        }
+
+        // Get list of members
+        guild.loadMembers().onSuccess { guildMembers ->
+            val channelMembers = guildMembers.filter { member ->
+                    member.hasPermission(guildChannel, Permission.VIEW_CHANNEL) &&
+                            !member.user.isBot &&
+                            !member.hasPermission(Permission.ADMINISTRATOR)
+                }
+            archiveChannelHandler.archiveChannel(event, guildChannel, channelMembers)
+        }
+
+        event.message.delete().queue()
+    }
 
 
 }
