@@ -13,13 +13,13 @@ class CreateModuleHandler: KoinComponent {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    /**
+     * Creates a new text-channel, using the given command tokens.
+     * Also creates an associated role and sets up permissions, including a self-assign message within the #rollen-module channel.
+     * @param event The message event which includes the create command
+     * @param commandTokens List of arguments, syntax: `/create module-name [full module name] [role-Color] [role-select-emoji]`
+     */
     fun createModule(event: MessageReceivedEvent, commandTokens: List<String>) {
-
-        /*
-        Syntax:
-        /create module-name [Full Name] [Color] [emoji]
-         */
-
 
         val channelName = commandTokens.first()
         var color: Color? = null

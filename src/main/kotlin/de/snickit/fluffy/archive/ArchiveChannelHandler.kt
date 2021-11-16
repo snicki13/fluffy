@@ -31,13 +31,13 @@ class ArchiveChannelHandler: KoinComponent {
         val roles = guildChannel.guild.getRolesByName(guildChannel.name, true)
         if(roles.size > 1){
             logger.info("More than one role was found: $roles")
-            event.channel.sendMessage("Archive: More than one role was found, please delete manually")
+            event.channel.sendMessage("Archive: More than one role was found, please delete manually").queue()
         }
         else{
             when (val moduleRole = roles.firstOrNull()) {
                 null -> {
                     logger.info("No role associated with this channel was found. Delete manually")
-                    event.channel.sendMessage("Archive: No role associated with this channel was found. Delete manually.")
+                    event.channel.sendMessage("Archive: No role associated with this channel was found. Delete manually.").queue()
                 }
                 else -> {
                     logger.info("deleted role $moduleRole")

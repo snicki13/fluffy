@@ -1,5 +1,6 @@
 package de.snickit.fluffy
 
+import de.snickit.fluffy.Utils.checkChannelAndRolesPermission
 import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.createModule.CreateModuleHandler
 import de.snickit.fluffy.message.MorningMessageResponder
@@ -9,9 +10,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import org.slf4j.LoggerFactory
 import java.time.ZoneId
 
 class DiscordListener : ListenerAdapter(), KoinComponent {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val morningMessageResponder by inject<MorningMessageResponder>()
     private val nightMessageResponder by inject<NightMessageResponder>()
@@ -44,17 +48,36 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         }
     }
 
-    private fun createModule(event: MessageReceivedEvent, commandTokens: List<String>) {
+    /**
+     * Calls the create-Module function, checking permissions beforehand.
+     * Creates a new text-channel, using the given command tokens.
+     * Also creates an associated role and sets up permissions, including a self-assign message within the #rollen-module channel.
+     * @param event The message event which includes the create command
+     * @param commandTokens List of arguments, syntax: `/create module-name [full module name] [role-Color] [role-select-emoji]`
+     */
+    private fun createModule(event: MessageReceivedEvent, commandTokens: List<String>): Boolean {
+        if(!checkChannelAndRolesPermission(event))
+            return false
+
+        logger.info("Permissions check passed")
+
         createModuleHandler.createModule(event, commandTokens)
+        return true
     }
 
-    private fun archiveChannel(event: MessageReceivedEvent) {
+
+    private fun archiveChannel(event: MessageReceivedEvent): Boolean {
+        if(!checkChannelAndRolesPermission(event))
+            return false
+
+        logger.info("Permissions check passed")
+
         val guild = event.guild
         val guildChannel = guild.getGuildChannelById(event.channel.id)!!
 
         if (!guild.getCategoriesByName("MODULE", true).contains(guildChannel.parent)) {
             event.channel.sendMessage("YOU SHALL NOT PASS (or archive) this Channel!").queue()
-            return
+            return false
         }
 
         // Get list of members
@@ -68,6 +91,7 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         }
 
         event.message.delete().queue()
+        return  true
     }
 
 
