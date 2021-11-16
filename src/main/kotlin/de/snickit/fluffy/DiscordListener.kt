@@ -89,10 +89,13 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
                             !member.user.isBot &&
                             !member.hasPermission(Permission.ADMINISTRATOR)
                 }
-            archiveChannelHandler.archiveChannel(event, guildChannel, channelMembers)
+            try {
+                archiveChannelHandler.archiveChannel(event, guildChannel, channelMembers)
+                event.message.delete().queue()
+            } catch (e: Exception){
+                event.message.reply("The following users were members of the channel: ${channelMembers.map(Member::getAsMention)}" )
+            }
         }
-
-        event.message.delete().queue()
         return
     }
 
