@@ -5,6 +5,7 @@ import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.createModule.CreateModuleHandler
 import de.snickit.fluffy.message.MessageResponder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.koin.core.component.KoinComponent
@@ -67,7 +68,6 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         return
     }
 
-
     private fun archiveChannel(event: MessageReceivedEvent) {
         if(!checkChannelAndRolesPermission(event))
             return
@@ -98,6 +98,5 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         }
         return
     }
-
 
 }
