@@ -2,8 +2,7 @@ package de.snickit.fluffy
 
 import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.createModule.CreateModuleHandler
-import de.snickit.fluffy.message.MorningMessageResponder
-import de.snickit.fluffy.message.NightMessageResponder
+import de.snickit.fluffy.message.MessageResponder
 import io.github.serpro69.kfaker.Faker
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -40,8 +39,7 @@ object Fluffy: KoinComponent {
             modules(
                 module {
                     single { Faker() }
-                    single { MorningMessageResponder() }
-                    single { NightMessageResponder() }
+                    single { MessageResponder() }
                     single { DiscordListener() }
                     single { ArchiveChannelHandler() }
                     single { CreateModuleHandler() }
