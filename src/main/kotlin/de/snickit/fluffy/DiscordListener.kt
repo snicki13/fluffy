@@ -47,7 +47,6 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
         when (messageTimestamp.hour) {
             in 0..4 -> messageResponder.nightlyResponse(event.channel, event.message)
             in 5..10 -> messageResponder.dailyResponse(event.channel, event.message)
-            in 22..24 -> messageResponder.dailyResponse(event.channel, event.message)
         }
     }
 
