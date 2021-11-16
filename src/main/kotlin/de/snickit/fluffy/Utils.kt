@@ -3,6 +3,7 @@ package de.snickit.fluffy
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -55,6 +56,34 @@ object Utils {
         // Nach dem SS zählt alles ins nächste WS dieses/nächstes Jahr
         //22-23ws
         return "${thisYear}-${dateFormat.format(date.plusYears(1))}ws"
+    }
+
+    /**
+     * Checks if the author of the message has all the following permissions:
+     * - Manage Channel
+     * - Manage Roles
+     * - Message Write
+     * - Use Slash commands
+     * or has Administrator permissions instead
+     */
+    fun checkChannelAndRolesPermission(event: MessageReceivedEvent): Boolean {
+        val hasPermissions = event.member!!.hasPermission(
+            Permission.MANAGE_CHANNEL,
+            Permission.MANAGE_ROLES,
+            Permission.MESSAGE_WRITE,
+            Permission.USE_SLASH_COMMANDS
+        ) || event.member!!.hasPermission(
+            Permission.ADMINISTRATOR
+        )
+
+        if(!hasPermissions) {
+            logger.info("User has not enough permissions!")
+            val memberRole = event.guild.roles.first { it.name == "Member" }
+            event.message.reply(
+                """You do not have the required permissions to edit channels & roles.
+                  |Please ask a ${memberRole.asMention} to create it for you.""".trimMargin()).queue()
+        }
+        return hasPermissions
     }
 
     fun getCurrentSemester(): String =
