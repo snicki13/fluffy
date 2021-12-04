@@ -17,9 +17,7 @@ object AocLeaderboardBuilder {
             ).jsonObject.also { cache = it }
         } else cache
 
-        val users = parseMembers(json!!.getJSONObject("members"))
-
-        return Leaderboard(event, ownerId, users)
+        return Leaderboard(event, ownerId, parseMembers(json!!.getJSONObject("members")))
     }
 
     private fun parseMembers(members: JSONObject): List<AdventUser> =
