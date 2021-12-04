@@ -1,6 +1,6 @@
 package de.snickit.fluffy.aoc
-import org.json.JSONObject
 
+import org.json.JSONObject
 import java.time.LocalDateTime
 import khttp.get
 
@@ -44,8 +44,5 @@ object AocLeaderboardBuilder {
             val tsGetStar1 = try { timestamps.getJSONObject("1").getInt("get_star_ts").toLong() } catch (e: Exception) { 0L }
             val tsGetStar2 = try { timestamps.getJSONObject("2").getInt("get_star_ts").toLong() } catch (e: Exception) { 0L }
             CompletionDayLevel(day.toInt(), tsGetStar1, tsGetStar2)
-        }.sortedBy(CompletionDayLevel::challenge)
-            .associate {
-                Pair(it.challenge, it)
-            }
+        }.sortedBy(CompletionDayLevel::challenge).associateBy { it.challenge }
 }
