@@ -1,5 +1,6 @@
 package de.snickit.fluffy
 
+import de.snickit.fluffy.aoc.LeaderBoardPoster
 import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.createModule.CreateModuleHandler
 import de.snickit.fluffy.message.MessageResponder
@@ -43,6 +44,7 @@ object Fluffy: KoinComponent {
                     single { DiscordListener() }
                     single { ArchiveChannelHandler() }
                     single { CreateModuleHandler() }
+                    single { LeaderBoardPoster() }
                 }
             )
         }

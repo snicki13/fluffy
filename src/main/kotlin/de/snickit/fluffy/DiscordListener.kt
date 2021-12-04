@@ -1,6 +1,7 @@
 package de.snickit.fluffy
 
 import de.snickit.fluffy.Utils.checkChannelAndRolesPermission
+import de.snickit.fluffy.aoc.LeaderBoardPoster
 import de.snickit.fluffy.archive.ArchiveChannelHandler
 import de.snickit.fluffy.createModule.CreateModuleHandler
 import de.snickit.fluffy.message.MessageResponder
@@ -20,6 +21,7 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
     private val messageResponder by inject<MessageResponder>()
     private val archiveChannelHandler by inject<ArchiveChannelHandler>()
     private val createModuleHandler by inject<CreateModuleHandler>()
+    private val leaderBoardPoster by inject<LeaderBoardPoster>()
 
     private val commandTokenRegex = Regex("^(/\\S+)(?:\\s+(?:([^\"]\\S+)|\"(.+)\"))*\$")
 
@@ -35,6 +37,8 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
             "/archive" -> archiveChannel(event)
             "/create" ->
                 createModule(event, commandTokens.drop(1)) // remove command token itself
+            "/aoc" -> aocLeaderboard(event, commandTokens.drop(1))
+
             else -> messageResponder(event)
         }
     }
@@ -97,6 +101,29 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
             }
         }
         return
+    }
+
+    private fun aocLeaderboard(event: MessageReceivedEvent, commandTokens: List<String>) {
+        fun printHelp() = event.message.reply("/aoc <year?> <ownerId?> <sessionToken?>").queue()
+
+        if (event.channel.name.matches(Regex("aoc")).not()) return
+        if (commandTokens.isNotEmpty() && listOf("--help", "-h").contains(commandTokens.first())) return printHelp()
+
+        val guild = event.guild
+        val guildChannel = guild.getGuildChannelById(event.channel.id)!!
+        // Get list of members
+        guild.loadMembers().onSuccess { guildMembers ->
+            val channelMembers = guildMembers.filter { member ->
+                member.hasPermission(guildChannel, Permission.VIEW_CHANNEL) &&
+                        !member.user.isBot &&
+                        !member.hasPermission(Permission.ADMINISTRATOR)
+            }
+            try {
+                leaderBoardPoster.postLeaderboard(event, commandTokens, channelMembers)
+            } catch (e: Exception){
+                printHelp()
+            }
+        }
     }
 
 }

@@ -18,6 +18,7 @@ repositories {
     maven {
         url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
     }
+    jcenter()
 }
 
 dependencies {
@@ -28,6 +29,7 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.1.2")
     implementation("org.slf4j:slf4j-api:1.7.31")
     implementation("org.slf4j:slf4j-simple:1.7.31")
+    implementation("khttp:khttp:1.0.0")
 }
 
 tasks.jar {
