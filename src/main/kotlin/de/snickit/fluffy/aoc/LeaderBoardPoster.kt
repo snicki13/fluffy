@@ -12,6 +12,7 @@ class LeaderBoardPoster: KoinComponent {
         "Mein Code sah früher auch so aus.",
         "Wow! Das hab ich gar nicht von dir erwartet!",
         "So wenig Code! Herzberg wäre stolz auf dich!",
+        "Das ist wirklich schöner Legacy-Code!"
     )
 
     private val session = System.getenv("AOC_SESSION")
