@@ -93,7 +93,7 @@ class DiscordListener : ListenerAdapter(), KoinComponent {
                 archiveChannelHandler.archiveChannel(event, guildChannel, channelMembers)
                 event.message.delete().queue()
             } catch (e: Exception){
-                event.message.reply("The following users were members of the channel: ${channelMembers.map(Member::getAsMention)}" )
+                event.channel.sendMessage("The following users were members of the channel: ${channelMembers.map(Member::getAsMention)}" ).complete()
             }
         }
         return

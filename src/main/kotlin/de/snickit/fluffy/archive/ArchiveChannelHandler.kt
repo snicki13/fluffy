@@ -21,8 +21,6 @@ class ArchiveChannelHandler: KoinComponent {
             logger.info(it.effectiveName)
         }
 
-        // TODO: User needs permissions
-        // TODO: Delete role
         logger.info("Ändere den namen des channels ${guildChannel.name}")
         guildChannel.manager.setName(prefix + guildChannel.name)
         assignCategory("archiv", guildChannel, true)
@@ -47,7 +45,8 @@ class ArchiveChannelHandler: KoinComponent {
                 }
             }
         }
-        guildChannel.manager.queue()
+        logger.info("Blocking manager to compelete queue actions")
+        guildChannel.manager.complete()
 
 
         // TODO Post reaction, click to remove yourself from archive

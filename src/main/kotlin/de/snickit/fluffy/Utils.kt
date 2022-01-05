@@ -102,6 +102,8 @@ object Utils {
             logger.info("syncing permissions with ${parentCat.name}")
             guildChannel.manager.sync(parentCat)
         }
+        logger.info("Blocking manager to compelete queue actions")
+        guildChannel.manager.complete()
     }
 
     fun addMembersToChannel(guildChannel: GuildChannel, channelMembers: List<Member>) {
